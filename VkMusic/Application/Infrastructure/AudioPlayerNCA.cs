@@ -18,7 +18,7 @@ namespace VkMusic.Application.Infrastructure
 
 		public AudioPlayerNCA()
 		{
-			_player.PlaybackFinished += AudioPlayingEnded;
+			_player.PlaybackFinished += (s, e) => AudioPlayingEnded?.Invoke(this, e);
 		}
 
 		public void PlayAudio(Stream audioStream)
