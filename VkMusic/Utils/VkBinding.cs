@@ -28,7 +28,7 @@ namespace VkMusic
 					.WithConstructorArgument(config.OwnerId)
 					.WithConstructorArgument(config.VkToken);
 
-				Bind<IAudioPlayer>().To<AudioPlayerNAudio>()
+				Bind<IAudioPlayer>().To<AudioPlayerNCA>()
 					.InSingletonScope();
 
 				Bind<IAudioPlaylist>().To<AudioPlaylist>()
@@ -38,7 +38,7 @@ namespace VkMusic
 					.OnActivation(a => a.AudioRepository.LoadingAudioProgressChanged += a.Invoke);
 
 				Bind<IAudioChangeExecuter>().To<AudioChangeWriteToConsole>()
-					.OnActivation(a => a.AudioPlaylist.AudioPlayer.SongChanged += a.Invoke);
+					.OnActivation(a => a.AudioPlaylist.AudioPlayer.AudioChanged += a.Invoke);
 
 				Bind<IUserInterface>().To<UserInterface>();
 			}

@@ -12,7 +12,7 @@ namespace VkMusic.Application.Infrastructure
 		private WaveOutEvent _waveOutEvent;
 
 		public event EventHandler AudioPlayingEnded;
-		public event EventHandler SongChanged;
+		public event EventHandler AudioChanged;
 
 		public AudioPlayerNAudio()
 		{
@@ -49,7 +49,7 @@ namespace VkMusic.Application.Infrastructure
 				_waveOutEvent.Init(reader);
 				_waveOutEvent.Play();
 				_onPause = false;
-				SongChanged?.Invoke(this, null);
+				AudioChanged?.Invoke(this, null);
 
 				_waveOutEvent.PlaybackStopped += InvokeAudioPlaingStoped;
 			}

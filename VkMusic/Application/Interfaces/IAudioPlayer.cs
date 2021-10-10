@@ -9,7 +9,7 @@ namespace VkMusic.Application.Interfaces
 	public interface IAudioPlayer : IDisposable
 	{
 		public event EventHandler AudioPlayingEnded;
-		public event EventHandler SongChanged;
+		public event EventHandler AudioChanged;
 		public bool OnPause { get; set; }
 		public void PlayAudio(Stream audioStream);
 	}

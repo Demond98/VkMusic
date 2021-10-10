@@ -29,7 +29,9 @@ namespace VkMusic.User.Infrastructure
 			while (key != ConsoleKey.Escape)
 			{
 				key = Console.ReadKey(true).Key;
-				Commands[key].Invoke(_audioPlaylist);
+				
+				if(Commands.ContainsKey(key))
+					Commands[key].Invoke(_audioPlaylist);
 			}
 		}
 	}
