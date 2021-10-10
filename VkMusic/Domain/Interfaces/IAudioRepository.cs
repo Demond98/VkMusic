@@ -9,7 +9,7 @@ namespace VkMusic.Domain.Interfaces
 	public interface IAudioRepository : IDisposable
 	{
 		public event EventHandler<(long bitesRecived, long totaBitesToRecive)> LoadingAudioProgressChanged;
-		public LinkedList<AudioDTO> GetAllAudiosInfo();
+		public LinkedList<AudioDTO> GetAllAudios();
 		public Stream GetAudioStream(AudioDTO audioInfo);
 	}
 }

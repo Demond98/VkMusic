@@ -5,7 +5,7 @@ using VkMusic.Application.Interfaces;
 using VkMusic.Domain.Core;
 using VkMusic.Domain.Interfaces;
 
-namespace VkMusic.Infrastructure
+namespace VkMusic.Application.Infrastructure
 {
 	public class AudioPlaylist : IAudioPlaylist
 	{
@@ -20,9 +20,9 @@ namespace VkMusic.Infrastructure
 		{
 			AudioPlayer = audioPlayer;
 			AudioRepository = audioRepository;
-			_audios = AudioRepository.GetAllAudiosInfo();
+			_audios = AudioRepository.GetAllAudios();
 			_currentAudioNode = null;
-			AudioPlayer.AudioPlayingStopped += PlayNext;
+			AudioPlayer.AudioPlayingEnded += PlayNext;
 		}
 
 		public void PlayNext()

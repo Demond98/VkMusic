@@ -8,8 +8,14 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="NAudio" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="VkNet" Version="1.67.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="irrKlang.NET4">
+      <HintPath>..\Lib\irrKlang.NET4.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

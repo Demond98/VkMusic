@@ -26,7 +26,7 @@ namespace VkMusic.Infrastructure
 			_token = token;
 		}
 
-		public LinkedList<AudioDTO> GetAllAudiosInfo()
+		public LinkedList<AudioDTO> GetAllAudios()
 		{
 			var vk = new VkApi();
 
@@ -49,7 +49,7 @@ namespace VkMusic.Infrastructure
 
 			var audios = vk.Audio.GetById(audiosIds);
 
-			var audiosDTO = AutomapperUtil.GetMapper()
+			var audiosDTO = Automapper.GetMapper()
 				.Map<IEnumerable<Audio>, IEnumerable<AudioDTO>>(audios);
 
 			return new LinkedList<AudioDTO>(audiosDTO);
@@ -66,8 +66,7 @@ namespace VkMusic.Infrastructure
 			{
 				using var webClient = new WebClient();
 				webClient.DownloadProgressChanged += DownloadProgressChangedHandler;
-				var task = webClient.DownloadFileTaskAsync(audioInfo.Url, filePath);
-				task.Wait();
+				webClient.DownloadFileTaskAsync(audioInfo.Url, filePath).Wait();
 			}
 
 			return File.OpenRead(filePath);

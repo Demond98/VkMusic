@@ -5,16 +5,16 @@ using System.IO;
 using System.Text;
 using VkMusic.Application.Interfaces;
 
-namespace VkMusic.Infrastructure
+namespace VkMusic.Application.Infrastructure
 {
-	public class AudioPlayer : IAudioPlayer
+	public sealed class AudioPlayerNAudio : IAudioPlayer
 	{
 		private WaveOutEvent _waveOutEvent;
 
-		public event EventHandler AudioPlayingStopped;
+		public event EventHandler AudioPlayingEnded;
 		public event EventHandler SongChanged;
 
-		public AudioPlayer()
+		public AudioPlayerNAudio()
 		{
 			_waveOutEvent = new WaveOutEvent();
 			_waveOutEvent.PlaybackStopped += InvokeAudioPlaingStoped;
@@ -58,7 +58,12 @@ namespace VkMusic.Infrastructure
 		private void InvokeAudioPlaingStoped(object sender, StoppedEventArgs e)
 		{
 			Console.WriteLine("invoke InvokeAudioPlaingStoped");
-			AudioPlayingStopped?.Invoke(this, null);
+			AudioPlayingEnded?.Invoke(this, null);
+		}
+
+		public void Dispose()
+		{
+			
 		}
 	}
 }

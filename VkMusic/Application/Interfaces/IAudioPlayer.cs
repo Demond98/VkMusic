@@ -6,9 +6,9 @@ using VkMusic.Domain.Core;
 
 namespace VkMusic.Application.Interfaces
 {
-	public interface IAudioPlayer
+	public interface IAudioPlayer : IDisposable
 	{
-		public event EventHandler AudioPlayingStopped;
+		public event EventHandler AudioPlayingEnded;
 		public event EventHandler SongChanged;
 		public bool OnPause { get; set; }
 		public void PlayAudio(Stream audioStream);

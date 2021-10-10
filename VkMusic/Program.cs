@@ -7,77 +7,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
 using VkMusic.Domain.Core;
-using VkMusic.Domain.Interfaces;
 using VkMusic.Infrastructure;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using VkMusic.User.Interfaces;
+using System.Reflection;
+using Ninject;
 
 namespace VkMusic
 {
-	public static class Program
+	public static partial class Program
 	{
 		static void Main(string[] args)
 		{
-			AutomapperUtil.Initilize();
+			var container = InitilizeApplication();
+			StartupApplication(container);
+		}
 
-			var ownerId = 123456789;
-			var token = "";
+		private static StandardKernel InitilizeApplication()
+		{
+			Automapper.Initilize();
 
-			IAudioRepository audioRepository = new AudioRepository(ownerId, token);
-			IAudioPlayer audioPlayer = new AudioPlayer();
-			IAudioPlaylist audioPlaylist = new AudioPlaylist(audioPlayer, audioRepository);
+			var config = ConfigReader<Config>.ReadFromFile("config.json");
+			var container = new StandardKernel(new VkBinding(config));
+			container.Load(Assembly.GetExecutingAssembly());
 
-			audioRepository.LoadingAudioProgressChanged += WriteProcent;
-			audioPlaylist.AudioPlayer.SongChanged += (s, e) => WriteAudioTitle(s, audioPlaylist.CurrentAudio);
+			return container;
+		}
 
+		private static void StartupApplication(StandardKernel container)
+		{
+			var audioPlaylist = container.Get<IAudioPlaylist>();
+			var audioProgressChangeExecuter = container.Get<ILoadingAudioProgressChangeExecuter>();
+			var audioChangeExecuter = container.Get<IAudioChangeExecuter>();
+			var userInterface = container.Get<IUserInterface>();
+			
 			audioPlaylist.PlayNext();
-
-			while (true)
-			{
-				var keyInfo = Console.ReadKey(true);
-
-				switch (keyInfo.Key)
-				{
-					case ConsoleKey.LeftArrow:
-						audioPlaylist.PlayPrevious();
-						break;
-
-					case ConsoleKey.RightArrow:
-						audioPlaylist.PlayNext();
-						break;
-
-					case ConsoleKey.Spacebar:
-						audioPlaylist.AudioPlayer.OnPause = !audioPlaylist.AudioPlayer.OnPause;
-						break;
-
-					case ConsoleKey.Escape:
-						return;
-
-					default:
-						break;
-				}
-			}
-		}
-
-		private static void WriteProcent(object sender, (long bitesRecived, long totaBitesToRecive) e)
-		{
-			lock (sender)
-			{
-				var procent = (int)(100.0 * e.bitesRecived / e.totaBitesToRecive);
-
-				if (procent == 100)
-					Console.Write($"     ");
-				else
-					Console.Write($"{procent}%");
-
-				Console.CursorLeft = 0;
-			}
-		}
-
-		private static void WriteAudioTitle(object sender, AudioDTO audio)
-		{
-			lock (sender)
-			{
-				Console.WriteLine($"Playing {audio.Title} - {audio.Artist} - {audio.Id}");
-			}
+			userInterface.Invoke();
 		}
 	}
 }

@@ -7,7 +7,7 @@ using VkNet.Model.Attachments;
 
 namespace VkMusic.Infrastructure
 {
-	public static class AutomapperUtil
+	public static class Automapper
 	{
 		private static MapperConfiguration _config;
 
