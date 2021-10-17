@@ -31,7 +31,7 @@ namespace VkMusic
 				Bind<IAudioPlayer>().To<AudioPlayerNCA>()
 					.InSingletonScope();
 
-				Bind<IAudioPlaylist>().To<AudioPlaylist>()
+				Bind<IAudioPlaylist>().To<AudioPlayList>()
 					.InSingletonScope();
 
 				Bind<ILoadingAudioProgressChangeExecuter>().To<LoadingAudioProgressChangeWriteToConsole>()

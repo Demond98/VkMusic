@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
 
 namespace VkMusic.Application.Infrastructure
@@ -37,8 +38,13 @@ namespace VkMusic.Application.Infrastructure
 					_waveOutEvent.Play();
 			}
 		}
-		
-		public void PlayAudio(Stream audioStream)
+
+		public Task HandlePause()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task PlayAudio(Stream audioStream)
 		{
 			lock(_waveOutEvent)
 			{
@@ -53,12 +59,14 @@ namespace VkMusic.Application.Infrastructure
 
 				_waveOutEvent.PlaybackStopped += InvokeAudioPlaingStoped;
 			}
+
+			return Task.Delay(1);
 		}
 
 		private void InvokeAudioPlaingStoped(object sender, StoppedEventArgs e)
 		{
 			Console.WriteLine("invoke InvokeAudioPlaingStoped");
-			AudioPlayingEnded?.Invoke(this, null);
+			AudioPlayingEnded?.Invoke(this, e);
 		}
 
 		public void Dispose()

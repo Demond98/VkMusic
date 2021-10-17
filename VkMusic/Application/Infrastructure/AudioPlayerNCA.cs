@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
 using VkMusic.Infrastructure;
 
@@ -9,9 +10,7 @@ namespace VkMusic.Application.Infrastructure
 {
 	public class AudioPlayerNCA : IAudioPlayer
 	{
-		NetCoreAudio.Player _player = new NetCoreAudio.Player();
-
-		public bool OnPause { get => _player.Paused; set => throw new NotImplementedException(); }
+		private readonly NetCoreAudio.Player _player = new NetCoreAudio.Player();
 
 		public event EventHandler AudioPlayingEnded;
 		public event EventHandler AudioChanged;
@@ -21,10 +20,23 @@ namespace VkMusic.Application.Infrastructure
 			_player.PlaybackFinished += (s, e) => AudioPlayingEnded?.Invoke(this, e);
 		}
 
-		public void PlayAudio(Stream audioStream)
+		public async Task HandlePause()
 		{
-			var fs = audioStream as FileStream;
-			_player.Play(fs.Name);
+			if (_player.Paused)
+				await _player.Resume();
+			else
+				await _player.Pause();
+		}
+
+		public async Task PlayAudio(Stream audioStream)
+		{
+			if (audioStream is FileStream fileStream)
+				await PlayAudio(fileStream);
+		}
+		
+		private async Task PlayAudio(FileStream audioStream)
+		{
+			await _player.Play(audioStream.Name);
 			AudioChanged?.Invoke(this, null);
 		}
 		

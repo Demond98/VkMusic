@@ -55,7 +55,7 @@ namespace VkMusic.Infrastructure
 			return new LinkedList<AudioDTO>(audiosDTO);
 		}
 
-		public Stream GetAudioStream(AudioDTO audioInfo)
+		public FileStream GetAudioStream(AudioDTO audioInfo)
 		{
 			if (!Directory.Exists(FilesDirectoryName))
 				Directory.CreateDirectory(FilesDirectoryName);

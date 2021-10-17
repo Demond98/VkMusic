@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using VkMusic.Domain.Core;
 
 namespace VkMusic.Application.Interfaces
@@ -10,7 +11,7 @@ namespace VkMusic.Application.Interfaces
 	{
 		public event EventHandler AudioPlayingEnded;
 		public event EventHandler AudioChanged;
-		public bool OnPause { get; set; }
-		public void PlayAudio(Stream audioStream);
+		public Task HandlePause();
+		public Task PlayAudio(Stream audioStream);
 	}
 }
