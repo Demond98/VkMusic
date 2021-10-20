@@ -4,10 +4,10 @@ namespace VkMusic.Domain.Core
 {
 	public class AudioDTO
 	{
-		public string Id { get; set; }
-		public string Artist { get; set; }
-		public string Title { get; set; }
-		public Uri Url { get; set; }
-		public long DurationInSeconds { get; set; }
+		public string Id { get; internal set; }
+		public string Artist { get; internal set; }
+		public string Title { get; internal set; }
+		public Uri Url { get; internal set; }
+		public long DurationInSeconds { get; internal set; }
 	}
 }

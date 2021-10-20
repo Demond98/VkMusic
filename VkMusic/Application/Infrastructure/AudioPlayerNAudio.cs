@@ -21,32 +21,22 @@ namespace VkMusic.Application.Infrastructure
 			_waveOutEvent.PlaybackStopped += InvokeAudioPlaingStoped;
 		}
 
-		public bool _onPause;
-		public bool OnPause
-		{
-			get => _onPause;
-			set
-			{
-				if (_onPause == value)
-					return;
-
-				_onPause = value;
-
-				if (value)
-					_waveOutEvent.Pause();
-				else
-					_waveOutEvent.Play();
-			}
-		}
-
 		public Task HandlePause()
 		{
-			throw new NotImplementedException();
+			lock (_waveOutEvent)
+			{
+				if (_waveOutEvent.PlaybackState == PlaybackState.Paused)
+					_waveOutEvent.Play();
+				else
+					_waveOutEvent.Pause();
+			}
+
+			return Task.Delay(0);
 		}
 
 		public Task PlayAudio(Stream audioStream)
 		{
-			lock(_waveOutEvent)
+			lock (_waveOutEvent)
 			{
 				_waveOutEvent.PlaybackStopped -= InvokeAudioPlaingStoped;
 
@@ -54,24 +44,22 @@ namespace VkMusic.Application.Infrastructure
 				_waveOutEvent.Stop();
 				_waveOutEvent.Init(reader);
 				_waveOutEvent.Play();
-				_onPause = false;
 				AudioChanged?.Invoke(this, null);
 
 				_waveOutEvent.PlaybackStopped += InvokeAudioPlaingStoped;
 			}
 
-			return Task.Delay(1);
+			return Task.Delay(0);
 		}
 
 		private void InvokeAudioPlaingStoped(object sender, StoppedEventArgs e)
 		{
-			Console.WriteLine("invoke InvokeAudioPlaingStoped");
 			AudioPlayingEnded?.Invoke(this, e);
 		}
 
 		public void Dispose()
 		{
-			
+
 		}
 	}
 }

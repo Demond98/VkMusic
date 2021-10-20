@@ -8,6 +8,8 @@ namespace VkMusic.User.Infrastructure
 {
 	public class LoadingAudioProgressChangeWriteToConsole : ILoadingAudioProgressChangeExecuter
 	{
+		const int ProgressBarLength = 20;
+		
 		public LoadingAudioProgressChangeWriteToConsole(IAudioRepository audioRepository)
 		{
 			AudioRepository = audioRepository;
@@ -19,14 +21,25 @@ namespace VkMusic.User.Infrastructure
 		{
 			lock (sender)
 			{
-				var procent = (int)(100.0 * e.bitesRecived / e.totaBitesToRecive);
-
-				if (procent == 100)
-					Console.Write(new string(' ', 4));
-				else
-					Console.Write($"{procent}%");
-
-				Console.CursorLeft = 0;
+				var loadedPart = (int)(ProgressBarLength * e.bitesRecived / e.totaBitesToRecive);
+				
+				if (loadedPart == 0)
+				{
+					Console.SetCursorPosition(0, 6);
+					Console.Write(new string(' ', Console.WindowWidth));
+					Console.SetCursorPosition(0, 6);
+					Console.Write($"[{new string(' ', ProgressBarLength)}]");
+				}
+				else if (e.bitesRecived == e.totaBitesToRecive)
+				{
+					Console.SetCursorPosition(0, 6);
+					Console.Write(new string(' ', ProgressBarLength + 2));
+				}
+				else if (loadedPart != ProgressBarLength)
+				{
+					Console.SetCursorPosition(1, 6);
+					Console.Write(new string('#', loadedPart));
+				}
 			}
 		}
 	}

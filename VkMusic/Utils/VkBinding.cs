@@ -23,15 +23,25 @@ namespace VkMusic
 
 			public override void Load()
 			{
-				Bind<IAudioRepository>().To<AudioRepository>()
+				Bind<IAudioRepository>().To<VkAudioRepository>()
 					.InSingletonScope()
 					.WithConstructorArgument(config.OwnerId)
 					.WithConstructorArgument(config.VkToken);
 
-				Bind<IAudioPlayer>().To<AudioPlayerNCA>()
-					.InSingletonScope();
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
+				{
+					Bind<IAudioPlayer>().To<AudioPlayerNCA>()
+						.InSingletonScope();
+				}
+				else if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+				{
+					Bind<IAudioPlayer>().To<AudioPlayerNAudio>()
+						.InSingletonScope();
+				}
+				else
+					throw new PlatformNotSupportedException("Current OS not supported");
 
-				Bind<IAudioPlaylist>().To<AudioPlayList>()
+				Bind<IAudioPlaylist>().To<AudioPlaylist>()
 					.InSingletonScope();
 
 				Bind<ILoadingAudioProgressChangeExecuter>().To<LoadingAudioProgressChangeWriteToConsole>()

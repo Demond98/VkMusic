@@ -14,7 +14,7 @@ namespace VkMusic.Infrastructure
 		public static IMapper GetMapper()
 		{
 			if (_config == null)
-				throw new Exception($"{nameof(_config)} is null");
+				throw new NullReferenceException($"{nameof(_config)} is null");
 
 			return _config.CreateMapper();
 		}

@@ -10,6 +10,6 @@ namespace VkMusic.Domain.Interfaces
 	{
 		public event EventHandler<(long bitesRecived, long totaBitesToRecive)> LoadingAudioProgressChanged;
 		public LinkedList<AudioDTO> GetAllAudios();
-		public FileStream GetAudioStream(AudioDTO audioInfo);
+		public Stream GetAudioStream(AudioDTO audioInfo);
 	}
 }

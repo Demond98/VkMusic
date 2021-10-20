@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using VkMusic.Domain.Core;
 using VkMusic.Domain.Interfaces;
 using VkNet;
@@ -11,7 +14,7 @@ using VkNet.Model.Attachments;
 
 namespace VkMusic.Infrastructure
 {
-	public sealed class AudioRepository : IAudioRepository
+	public sealed class VkAudioRepository : IAudioRepository
 	{
 		public static string FilesDirectoryName = "audio";
 
@@ -20,7 +23,7 @@ namespace VkMusic.Infrastructure
 		private int _ownerId;
 		private string _token;
 
-		public AudioRepository(int ownerId, string token)
+		public VkAudioRepository(int ownerId, string token)
 		{
 			_ownerId = ownerId;
 			_token = token;
@@ -55,7 +58,7 @@ namespace VkMusic.Infrastructure
 			return new LinkedList<AudioDTO>(audiosDTO);
 		}
 
-		public FileStream GetAudioStream(AudioDTO audioInfo)
+		public Stream GetAudioStream(AudioDTO audioInfo)
 		{
 			if (!Directory.Exists(FilesDirectoryName))
 				Directory.CreateDirectory(FilesDirectoryName);
@@ -74,7 +77,7 @@ namespace VkMusic.Infrastructure
 
 		private void DownloadProgressChangedHandler(object sender, DownloadProgressChangedEventArgs e)
 		{
-			LoadingAudioProgressChanged?.Invoke(this, (e.BytesReceived, e.TotalBytesToReceive));
+			LoadingAudioProgressChanged?.Invoke(sender, (e.BytesReceived, e.TotalBytesToReceive));
 		}
 
 		public void Dispose()

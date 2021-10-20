@@ -8,7 +8,7 @@ using VkMusic.Domain.Interfaces;
 
 namespace VkMusic.Application.Infrastructure
 {
-	public class AudioPlayList : IAudioPlaylist
+	public class AudioPlaylist : IAudioPlaylist
 	{
 		private readonly LinkedList<AudioDTO> _audios;
 		private LinkedListNode<AudioDTO> _currentAudioNode;
@@ -17,7 +17,7 @@ namespace VkMusic.Application.Infrastructure
 		public IAudioRepository AudioRepository { get; }
 		public AudioDTO CurrentAudio => _currentAudioNode.Value;
 
-		public AudioPlayList(IAudioPlayer audioPlayer, IAudioRepository audioRepository)
+		public AudioPlaylist(IAudioPlayer audioPlayer, IAudioRepository audioRepository)
 		{
 			AudioPlayer = audioPlayer;
 			AudioRepository = audioRepository;

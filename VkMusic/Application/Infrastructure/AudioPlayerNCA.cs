@@ -10,13 +10,14 @@ namespace VkMusic.Application.Infrastructure
 {
 	public class AudioPlayerNCA : IAudioPlayer
 	{
-		private readonly NetCoreAudio.Player _player = new NetCoreAudio.Player();
+		private readonly NetCoreAudio.Player _player;
 
 		public event EventHandler AudioPlayingEnded;
 		public event EventHandler AudioChanged;
 
 		public AudioPlayerNCA()
 		{
+			_player = new NetCoreAudio.Player();
 			_player.PlaybackFinished += (s, e) => AudioPlayingEnded?.Invoke(this, e);
 		}
 
@@ -32,12 +33,15 @@ namespace VkMusic.Application.Infrastructure
 		{
 			if (audioStream is FileStream fileStream)
 				await PlayAudio(fileStream);
+
+			else
+				throw new NotSupportedException("NCA support only FileStream");
 		}
 		
 		private async Task PlayAudio(FileStream audioStream)
 		{
 			await _player.Play(audioStream.Name);
-			AudioChanged?.Invoke(this, null);
+			AudioChanged?.Invoke(this, new EventArgs());
 		}
 		
 		public void Dispose()

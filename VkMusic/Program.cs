@@ -42,7 +42,6 @@ namespace VkMusic
 			var audioChangeExecuter = container.Get<IAudioChangeExecuter>();
 			var userInterface = container.Get<IUserInterface>();
 			
-			audioPlaylist.PlayNext();
 			userInterface.Invoke();
 		}
 	}

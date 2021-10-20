@@ -21,9 +21,15 @@ namespace VkMusic.User.Infrastructure
 			lock (sender)
 			{
 				var audio = AudioPlaylist.CurrentAudio;
+				var title = audio.Title.Replace('\n', ' ');
+				var artist = audio.Artist.Replace('\n', ' ');
 
-				Console.WriteLine($"Playing {audio.Title} - {audio.Artist} - {audio.Id}");
+				Console.SetCursorPosition(0, 6);
+				Console.Write(new string(' ', Console.WindowWidth));
+				Console.SetCursorPosition(0, 6);
+				Console.WriteLine($"{title} - {artist}".Truncate(Console.WindowWidth - 1));
 			}
 		}
 	}
 }
+
