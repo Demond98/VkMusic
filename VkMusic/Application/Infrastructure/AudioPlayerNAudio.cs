@@ -31,7 +31,7 @@ namespace VkMusic.Application.Infrastructure
 					_waveOutEvent.Pause();
 			}
 
-			return Task.Delay(0);
+			return Task.Delay(1);
 		}
 
 		public Task PlayAudio(Stream audioStream)
@@ -49,7 +49,7 @@ namespace VkMusic.Application.Infrastructure
 				_waveOutEvent.PlaybackStopped += InvokeAudioPlaingStoped;
 			}
 
-			return Task.Delay(0);
+			return Task.Delay(1);
 		}
 
 		private void InvokeAudioPlaingStoped(object sender, StoppedEventArgs e)
