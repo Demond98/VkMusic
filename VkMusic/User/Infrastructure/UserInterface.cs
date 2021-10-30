@@ -79,6 +79,9 @@ namespace VkMusic.User.Infrastructure
 
 		private static void DrawAudioInfo(AudioDTO currentAudio)
 		{
+			if (currentAudio == null)
+				return;
+
 			var title = currentAudio.Title.Replace('\n', ' ');
 			var artist = currentAudio.Artist.Replace('\n', ' ');
 

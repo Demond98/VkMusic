@@ -15,7 +15,7 @@ namespace VkMusic.Application.Infrastructure
 		private readonly LinkedList<AudioDTO> _audios;
 		private LinkedListNode<AudioDTO> _currentAudioNode;
 
-		public AudioDTO CurrentAudio => _currentAudioNode.Value;
+		public AudioDTO CurrentAudio => _currentAudioNode?.Value;
 
 		public AudioPlaylist(IAudioPlayer audioPlayer, IAudioRepository audioRepository)
 		{
