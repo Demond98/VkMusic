@@ -9,9 +9,9 @@ namespace VkMusic.Application.Interfaces
 {
 	public interface IAudioPlayer : IDisposable
 	{
-		public event EventHandler AudioPlayingEnded;
-		public event EventHandler AudioChanged;
-		public Task HandlePause();
+		public PlayerState CurrentState { get; }
+		public Task Pause();
+		public Task Unpause();
 		public Task PlayAudio(Stream audioStream);
 	}
 }

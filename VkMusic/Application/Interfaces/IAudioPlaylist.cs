@@ -9,11 +9,11 @@ namespace VkMusic.Application.Interfaces
 {
 	public interface IAudioPlaylist
 	{
-		public IAudioPlayer AudioPlayer { get; }
-		public IAudioRepository AudioRepository { get; }
+		public PlayerState CurrentState { get; }
 		public AudioDTO CurrentAudio { get; }
-		public Task PlayNext();
-		public Task PlayPrevious();
-		public Task HandlePause();
+		public Task Pause();
+		public Task Unpase();
+		public Task PlayNext(Action<(long BytesReceived, long TotalBytesToReceive)> progress);
+		public Task PlayPrevious(Action<(long BytesReceived, long TotalBytesToReceive)> progress);
 	}
 }

@@ -9,12 +9,12 @@ namespace VkMusic.User.Infrastructure
 {
 	public class AudioChangeWriteToConsole : IAudioChangeExecuter
 	{
+		private IAudioPlaylist AudioPlaylist { get; set; }
+
 		public AudioChangeWriteToConsole(IAudioPlaylist audioPlaylist)
 		{
 			AudioPlaylist = audioPlaylist;
 		}
-
-		public IAudioPlaylist AudioPlaylist { get; }
 
 		public void Invoke(object sender, EventArgs args)
 		{

@@ -30,8 +30,8 @@ namespace VkMusic
 
 				if (Environment.OSVersion.Platform == PlatformID.Unix)
 				{
-					Bind<IAudioPlayer>().To<AudioPlayerNCA>()
-						.InSingletonScope();
+					//Bind<IAudioPlayer>().To<AudioPlayerNCA>()
+					//	.InSingletonScope();
 				}
 				else if (Environment.OSVersion.Platform == PlatformID.Win32NT)
 				{
@@ -44,12 +44,8 @@ namespace VkMusic
 				Bind<IAudioPlaylist>().To<AudioPlaylist>()
 					.InSingletonScope();
 
-				Bind<ILoadingAudioProgressChangeExecuter>().To<LoadingAudioProgressChangeWriteToConsole>()
-					.OnActivation(a => a.AudioRepository.LoadingAudioProgressChanged += a.Invoke);
-
-				Bind<IAudioChangeExecuter>().To<AudioChangeWriteToConsole>()
-					.OnActivation(a => a.AudioPlaylist.AudioPlayer.AudioChanged += a.Invoke);
-
+				Bind<ILoadingAudioProgressChangeExecuter>().To<LoadingAudioProgressChangeWriteToConsole>();
+				Bind<IAudioChangeExecuter>().To<AudioChangeWriteToConsole>();
 				Bind<IUserInterface>().To<UserInterface>();
 			}
 		}

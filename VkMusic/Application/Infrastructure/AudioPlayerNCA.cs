@@ -8,6 +8,7 @@ using VkMusic.Infrastructure;
 
 namespace VkMusic.Application.Infrastructure
 {
+	/*
 	public class AudioPlayerNCA : IAudioPlayer
 	{
 		private readonly NetCoreAudio.Player _player;
@@ -21,7 +22,7 @@ namespace VkMusic.Application.Infrastructure
 			_player.PlaybackFinished += (s, e) => AudioPlayingEnded?.Invoke(this, e);
 		}
 
-		public async Task HandlePause()
+		public async Task Pause()
 		{
 			if (_player.Paused)
 				await _player.Resume();
@@ -40,8 +41,9 @@ namespace VkMusic.Application.Infrastructure
 		
 		private async Task PlayAudio(FileStream audioStream)
 		{
-			await _player.Play(audioStream.Name);
+			var playTask = _player.Play(audioStream.Name);
 			AudioChanged?.Invoke(this, new EventArgs());
+			await playTask;
 		}
 		
 		public void Dispose()
@@ -49,4 +51,5 @@ namespace VkMusic.Application.Infrastructure
 
 		}
 	}
+	*/
 }

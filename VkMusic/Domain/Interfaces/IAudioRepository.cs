@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using VkMusic.Domain.Core;
 
 namespace VkMusic.Domain.Interfaces
 {
 	public interface IAudioRepository : IDisposable
 	{
-		public event EventHandler<(long bitesRecived, long totaBitesToRecive)> LoadingAudioProgressChanged;
-		public LinkedList<AudioDTO> GetAllAudios();
-		public Stream GetAudioStream(AudioDTO audioInfo);
+		public Task<LinkedList<AudioDTO>> GetAllAudios();
+		public Task<Stream> GetAudioStream(AudioDTO audioInfo, IProgress<(long BytesReceived, long TotalBytesToReceive)> progress);
 	}
 }

@@ -21,28 +21,28 @@ namespace VkMusic
 		static void Main(string[] args)
 		{
 			var container = InitilizeApplication();
-			StartupApplication(container);
+			StartupApplication(container).Wait();
 		}
 
 		private static StandardKernel InitilizeApplication()
 		{
 			Automapper.Initilize();
 
-			var config = ConfigReader<Config>.ReadFromFile("config.json");
+			var config = ConfigReader<Config>.ReadJsonFromFile("config.json");
 			var container = new StandardKernel(new VkBinding(config));
 			container.Load(Assembly.GetExecutingAssembly());
 
 			return container;
 		}
 
-		private static void StartupApplication(StandardKernel container)
+		private static async Task StartupApplication(StandardKernel container)
 		{
 			var audioPlaylist = container.Get<IAudioPlaylist>();
 			var audioProgressChangeExecuter = container.Get<ILoadingAudioProgressChangeExecuter>();
 			var audioChangeExecuter = container.Get<IAudioChangeExecuter>();
 			var userInterface = container.Get<IUserInterface>();
 			
-			userInterface.Invoke();
+			await userInterface.Invoke();
 		}
 	}
 }

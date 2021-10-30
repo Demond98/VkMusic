@@ -10,44 +10,42 @@ namespace VkMusic.Application.Infrastructure
 {
 	public class AudioPlaylist : IAudioPlaylist
 	{
+		private IAudioPlayer _audioPlayer;
+		private IAudioRepository _audioRepository;
 		private readonly LinkedList<AudioDTO> _audios;
 		private LinkedListNode<AudioDTO> _currentAudioNode;
 
-		public IAudioPlayer AudioPlayer { get; }
-		public IAudioRepository AudioRepository { get; }
 		public AudioDTO CurrentAudio => _currentAudioNode.Value;
 
 		public AudioPlaylist(IAudioPlayer audioPlayer, IAudioRepository audioRepository)
 		{
-			AudioPlayer = audioPlayer;
-			AudioRepository = audioRepository;
-			_audios = AudioRepository.GetAllAudios();
+			_audioPlayer = audioPlayer;
+			_audioRepository = audioRepository;
+			_audios = _audioRepository.GetAllAudios().Result;
 			_currentAudioNode = null;
-			AudioPlayer.AudioPlayingEnded += PlayNext;
 		}
 
-		public async Task PlayNext()
-			=> await PlayAudio(_currentAudioNode?.Next ?? _audios.First);
+		public PlayerState CurrentState
+			=> _audioPlayer.CurrentState;
 
-		public async Task PlayPrevious()
-			=> await PlayAudio(_currentAudioNode?.Previous ?? _audios.Last);
+		public Task Pause()
+			=> _audioPlayer.Pause();
 
-		public async Task HandlePause()
-			=> await AudioPlayer.HandlePause();
-		
-		private void PlayNext(object sender, EventArgs e)
-		{
-			lock (sender)
-			{
-				PlayNext().Wait();
-			}
-		}
+		public Task Unpase()
+			=> _audioPlayer.Unpause();
 
-		private async Task PlayAudio(LinkedListNode<AudioDTO> audioNode)
+		public Task PlayNext(Action<(long, long )> progress)
+			=> PlayAudio(_currentAudioNode?.Next ?? _audios.First, progress);
+
+		public Task PlayPrevious(Action<(long, long)> progress)
+			=> PlayAudio(_currentAudioNode?.Previous ?? _audios.Last, progress);
+
+		private async Task PlayAudio(LinkedListNode<AudioDTO> audioNode, Action<(long, long)> onProgress)
 		{
 			_currentAudioNode = audioNode;
-			var stream = AudioRepository.GetAudioStream(_currentAudioNode.Value);
-			await AudioPlayer.PlayAudio(stream);
+			var progress = new Progress<(long, long)>(onProgress);
+			var stream = await _audioRepository.GetAudioStream(_currentAudioNode.Value, progress);
+			await _audioPlayer.PlayAudio(stream);
 		}
 	}
 }

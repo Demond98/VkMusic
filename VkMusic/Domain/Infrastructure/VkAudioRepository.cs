@@ -16,9 +16,7 @@ namespace VkMusic.Infrastructure
 {
 	public sealed class VkAudioRepository : IAudioRepository
 	{
-		public static string FilesDirectoryName = "audio";
-
-		public event EventHandler<(long bitesRecived, long totaBitesToRecive)> LoadingAudioProgressChanged;
+		public static readonly string FilesDirectoryName = "audio";
 
 		private int _ownerId;
 		private string _token;
@@ -29,55 +27,56 @@ namespace VkMusic.Infrastructure
 			_token = token;
 		}
 
-		public LinkedList<AudioDTO> GetAllAudios()
+		public async Task<LinkedList<AudioDTO>> GetAllAudios()
 		{
 			var vk = new VkApi();
 
-			var authParams = new VkNet.Model.ApiAuthParams()
+			Console.Write("Authorize...");
+			await vk.AuthorizeAsync(new VkNet.Model.ApiAuthParams()
 			{
 				AccessToken = _token,
-			};
+			});
+			Console.WriteLine("complite");
 
-			vk.Authorize(authParams);
-
-			var getParams = new VkNet.Model.RequestParams.AudioGetParams()
+			Console.Write("Downloading ids...");
+			var audios = await vk.Audio.GetAsync(new VkNet.Model.RequestParams.AudioGetParams()
 			{
 				OwnerId = _ownerId,
 				Count = 6000,
-			};
+			});
+			Console.WriteLine("complite");
 
-			var audiosIds = vk.Audio
-				.Get(getParams)
-				.Select(a => $"{_ownerId}_{a.Id}");
+			var audiosIds = audios.Select(a => $"{_ownerId}_{a.Id}");
 
-			var audios = vk.Audio.GetById(audiosIds);
+			Console.Write("Downloading audios info...");
+			var audiosInfo = await vk.Audio.GetByIdAsync(audiosIds);
+			Console.WriteLine("complite");
 
 			var audiosDTO = Automapper.GetMapper()
-				.Map<IEnumerable<Audio>, IEnumerable<AudioDTO>>(audios);
+				.Map<IEnumerable<Audio>, IEnumerable<AudioDTO>>(audiosInfo);
 
 			return new LinkedList<AudioDTO>(audiosDTO);
 		}
 
-		public Stream GetAudioStream(AudioDTO audioInfo)
+		public async Task<Stream> GetAudioStream(AudioDTO audioInfo, IProgress<(long BytesReceived, long TotalBytesToReceive)> progress)
 		{
-			if (!Directory.Exists(FilesDirectoryName))
-				Directory.CreateDirectory(FilesDirectoryName);
+			Directory.CreateDirectory(FilesDirectoryName);
 
 			var filePath = Path.Combine(FilesDirectoryName, $"{audioInfo.Id}.mp3");
 
-			if (!File.Exists(filePath))
-			{
-				using var webClient = new WebClient();
-				webClient.DownloadProgressChanged += DownloadProgressChangedHandler;
-				webClient.DownloadFileTaskAsync(audioInfo.Url, filePath).Wait();
-			}
+			if (File.Exists(filePath))
+				return File.OpenRead(filePath);
+			
+			using var webClient = new WebClient();
+			webClient.DownloadProgressChanged += (s, e) => progress.Report((e.BytesReceived, e.TotalBytesToReceive));
+			//HACK:
+			webClient.DownloadDataCompleted += (s, e) => progress.Report((1, 1));
 
-			return File.OpenRead(filePath);
-		}
+			var data = await webClient.DownloadDataTaskAsync(audioInfo.Url);
 
-		private void DownloadProgressChangedHandler(object sender, DownloadProgressChangedEventArgs e)
-		{
-			LoadingAudioProgressChanged?.Invoke(sender, (e.BytesReceived, e.TotalBytesToReceive));
+			await File.WriteAllBytesAsync(filePath, data);
+
+			return new MemoryStream(data);
 		}
 
 		public void Dispose()

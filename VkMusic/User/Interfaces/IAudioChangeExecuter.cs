@@ -8,8 +8,6 @@ namespace VkMusic.User.Interfaces
 {
 	interface IAudioChangeExecuter
 	{
-		public IAudioPlaylist AudioPlaylist { get; }
-
 		public void Invoke(object sender, EventArgs args);
 	}
 }
