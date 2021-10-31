@@ -8,20 +8,20 @@ namespace VkMusic.Infrastructure
 {
 	public static class Automapper
 	{
-		private static MapperConfiguration _config;
+		public static MapperConfiguration Config { get; private set; }
 
 		public static IMapper GetMapper()
 		{
-			if (_config == null)
-				throw new NullReferenceException($"{nameof(_config)} is null");
+			if (Config == null)
+				throw new NullReferenceException($"{nameof(Config)} is null");
 
-			return _config.CreateMapper();
+			return Config.CreateMapper();
 		}
 
 		public static void Initilize()
 		{
 			var profile = new AudioProfile();
-			_config = new MapperConfiguration(e => e.AddProfile(profile));
+			Config = new MapperConfiguration(e => e.AddProfile(profile));
 		}
 	}
 }
