@@ -2,18 +2,25 @@
 using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
 using VkMusic.Domain.Core;
+using VkMusic.User.Interfaces;
 
 namespace VkMusic.User.Infrastructure
 {
 	public class UserInterface : IUserInterface
 	{
-		const int ProgressBarLength = 20;
+		private const int ProgressBarLength = 20;
 
 		private readonly IAudioPlaylist _audioPlaylist;
+		private readonly IAudioChangeExecuter _audioChangeExecuter;
+		private readonly ILoadingAudioProgressChangeExecuter _loadingAudioProgressChangeExecuter;
 
-		public UserInterface(IAudioPlaylist audioPlaylist)
+		public UserInterface(IAudioPlaylist audioPlaylist,
+					   IAudioChangeExecuter audioChangeExecuter,
+					   ILoadingAudioProgressChangeExecuter loadingAudioProgressChangeExecuter)
 		{
 			_audioPlaylist = audioPlaylist;
+			_audioChangeExecuter = audioChangeExecuter;
+			_loadingAudioProgressChangeExecuter = loadingAudioProgressChangeExecuter;
 		}
 
 		public void Invoke()
@@ -59,67 +66,22 @@ namespace VkMusic.User.Infrastructure
 
 		private Task PlayNext()
 		{
-			return PlayAudio(_audioPlaylist.PlayNext, _audioPlaylist.NextAudio)
+			return PlayAudio(_audioPlaylist.PlayNext)
 				.ContinueWith(async _ => await PlayNext(), TaskContinuationOptions.DenyChildAttach);
 		}
 
 		private Task PlayPrevious()
 		{
-			return PlayAudio(_audioPlaylist.PlayPrevious, _audioPlaylist.PreviousAudio)
+			return PlayAudio(_audioPlaylist.PlayPrevious)
 				.ContinueWith(async _ => await PlayNext(), TaskContinuationOptions.DenyChildAttach);
 		}
 
-		private static Task PlayAudio(Func<Action<(long, long)>, Task> playAudioFunc, AudioDTO currentAudio)
+		private Task PlayAudio(Func<Action<(long, long)>, Task> playAudioFunc)
 		{
-			var task = playAudioFunc(ProgressHandler);
-			DrawAudioInfo(currentAudio);
+			var task = playAudioFunc(_loadingAudioProgressChangeExecuter.ProgressHandler);
+			_audioChangeExecuter.Invoke();
 
 			return task;
-		}
-
-		private static void DrawAudioInfo(AudioDTO currentAudio)
-		{
-			if (currentAudio == null)
-				return;
-
-			var title = currentAudio.Title.Replace('\n', ' ');
-			var artist = currentAudio.Artist.Replace('\n', ' ');
-			var duration = currentAudio.DurationInSeconds;
-
-			var info = $"{title} - {artist} - {duration}sec";
-			var infoToShow = info.Truncate(Console.WindowWidth - 1);
-
-			Console.SetCursorPosition(0, 6);
-			Console.Write(new string(' ', Console.WindowWidth));
-			Console.SetCursorPosition(0, 6);
-			Console.WriteLine(infoToShow);
-		}
-
-		private static readonly object _syncObject = new();
-		private static void ProgressHandler((long BytesReceived, long TotalBytesToReceive) e)
-		{
-			lock (_syncObject)
-			{
-				var loadedPart = (int)(ProgressBarLength * e.BytesReceived / e.TotalBytesToReceive);
-
-				if (loadedPart == 0)
-				{
-					Console.SetCursorPosition(0, 8);
-					Console.Write(new string(' ', Console.WindowWidth));
-					Console.SetCursorPosition(0, 8);
-					Console.Write($"[{new string(' ', ProgressBarLength)}]");
-				}
-				else if (e.BytesReceived == e.TotalBytesToReceive)
-				{
-					Console.SetCursorPosition(0, 8);
-					Console.Write(new string(' ', ProgressBarLength + 2));
-				}
-				else if (loadedPart != ProgressBarLength)
-				{
-					Console.SetCursorPosition(1, 8);
-					Console.Write(new string('#', loadedPart));
-				}
-			}
 		}
 
 		private static void DrawInterface()

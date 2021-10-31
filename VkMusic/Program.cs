@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using VkMusic.Infrastructure;
+﻿using VkMusic.Infrastructure;
 using System.Reflection;
 using Ninject;
 
@@ -12,7 +11,7 @@ namespace VkMusic
 		static void Main(string[] args)
 		{
 			var container = InitilizeApplication();
-			StartupApplication(container).Wait();
+			StartupApplication(container);
 		}
 
 		private static StandardKernel InitilizeApplication()
@@ -28,7 +27,7 @@ namespace VkMusic
 			return container;
 		}
 
-		private static async Task StartupApplication(StandardKernel container)
+		private static void StartupApplication(StandardKernel container)
 		{
 			var userInterface = container.Get<IUserInterface>();
 			

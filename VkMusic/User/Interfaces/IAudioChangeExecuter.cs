@@ -6,8 +6,8 @@ using VkMusic.Domain.Core;
 
 namespace VkMusic.User.Interfaces
 {
-	interface IAudioChangeExecuter
+	public interface IAudioChangeExecuter
 	{
-		public void Invoke(object sender, EventArgs args);
+		public void Invoke();
 	}
 }

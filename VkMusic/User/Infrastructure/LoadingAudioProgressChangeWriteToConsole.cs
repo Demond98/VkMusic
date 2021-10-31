@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using VkMusic.Domain.Interfaces;
 using VkMusic.User.Interfaces;
 
@@ -8,8 +6,9 @@ namespace VkMusic.User.Infrastructure
 {
 	public class LoadingAudioProgressChangeWriteToConsole : ILoadingAudioProgressChangeExecuter
 	{
-		const int ProgressBarLength = 20;
-		
+		private const int ProgressBarLength = 20;
+		private static readonly object _syncObject = new();
+
 		public LoadingAudioProgressChangeWriteToConsole(IAudioRepository audioRepository)
 		{
 			AudioRepository = audioRepository;
@@ -17,27 +16,30 @@ namespace VkMusic.User.Infrastructure
 
 		public IAudioRepository AudioRepository { get; }
 
-		public void Invoke(object sender, (long bitesRecived, long totaBitesToRecive) e)
+		public void ProgressHandler((long BytesReceived, long TotalBytesToReceive) data)
 		{
-			lock (sender)
+			var bytesReceived = data.BytesReceived;
+			var totalBytesToReceive = data.TotalBytesToReceive;
+
+			lock (_syncObject)
 			{
-				var loadedPart = (int)(ProgressBarLength * e.bitesRecived / e.totaBitesToRecive);
-				
+				var loadedPart = (int)(ProgressBarLength * bytesReceived / totalBytesToReceive);
+
 				if (loadedPart == 0)
 				{
-					Console.SetCursorPosition(0, 6);
+					Console.SetCursorPosition(0, 8);
 					Console.Write(new string(' ', Console.WindowWidth));
-					Console.SetCursorPosition(0, 6);
+					Console.SetCursorPosition(0, 8);
 					Console.Write($"[{new string(' ', ProgressBarLength)}]");
 				}
-				else if (e.bitesRecived == e.totaBitesToRecive)
+				else if (bytesReceived == totalBytesToReceive)
 				{
-					Console.SetCursorPosition(0, 6);
+					Console.SetCursorPosition(0, 8);
 					Console.Write(new string(' ', ProgressBarLength + 2));
 				}
 				else if (loadedPart != ProgressBarLength)
 				{
-					Console.SetCursorPosition(1, 6);
+					Console.SetCursorPosition(1, 8);
 					Console.Write(new string('#', loadedPart));
 				}
 			}

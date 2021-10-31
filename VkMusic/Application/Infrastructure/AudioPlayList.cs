@@ -26,8 +26,6 @@ namespace VkMusic.Application.Infrastructure
 		private LinkedListNode<AudioDTO> PreviousAudioNode => _currentAudioNode?.Previous ?? _audios.Last;
 
 		public AudioDTO CurrentAudio => _currentAudioNode?.Value;
-		public AudioDTO NextAudio => NextAudioNode.Value;
-		public AudioDTO PreviousAudio => PreviousAudioNode.Value;
 
 		public PlayerState CurrentState
 			=> _audioPlayer.CurrentState;
@@ -38,7 +36,7 @@ namespace VkMusic.Application.Infrastructure
 		public Task UnPause()
 			=> _audioPlayer.Unpause();
 
-		public Task PlayNext(Action<(long, long )> progress)
+		public Task PlayNext(Action<(long, long)> progress)
 			=> PlayAudio(NextAudioNode, progress);
 
 		public Task PlayPrevious(Action<(long, long)> progress)

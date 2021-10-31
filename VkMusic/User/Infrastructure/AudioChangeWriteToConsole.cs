@@ -9,26 +9,30 @@ namespace VkMusic.User.Infrastructure
 {
 	public class AudioChangeWriteToConsole : IAudioChangeExecuter
 	{
-		private IAudioPlaylist AudioPlaylist { get; set; }
+		private readonly IAudioPlaylist _audioPlayList;
 
 		public AudioChangeWriteToConsole(IAudioPlaylist audioPlaylist)
 		{
-			AudioPlaylist = audioPlaylist;
+			_audioPlayList = audioPlaylist;
 		}
 
-		public void Invoke(object sender, EventArgs args)
+		public void Invoke()
 		{
-			lock (sender)
-			{
-				var audio = AudioPlaylist.CurrentAudio;
-				var title = audio.Title.Replace('\n', ' ');
-				var artist = audio.Artist.Replace('\n', ' ');
+			var audio = _audioPlayList.CurrentAudio;
+			if (audio == null)
+				return;
 
-				Console.SetCursorPosition(0, 6);
-				Console.Write(new string(' ', Console.WindowWidth));
-				Console.SetCursorPosition(0, 6);
-				Console.WriteLine($"{title} - {artist}".Truncate(Console.WindowWidth - 1));
-			}
+			var title = audio.Title.Replace('\n', ' ');
+			var artist = audio.Artist.Replace('\n', ' ');
+			var duration = audio.DurationInSeconds;
+
+			var info = $"{title} - {artist} - {duration}sec";
+			var infoToShow = info.Truncate(Console.WindowWidth - 1);
+
+			Console.SetCursorPosition(0, 6);
+			Console.Write(new string(' ', Console.WindowWidth));
+			Console.SetCursorPosition(0, 6);
+			Console.WriteLine(infoToShow);
 		}
 	}
 }

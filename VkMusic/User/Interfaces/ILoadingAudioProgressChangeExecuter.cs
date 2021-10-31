@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using VkMusic.Domain.Interfaces;
-
-namespace VkMusic.User.Interfaces
+﻿namespace VkMusic.User.Interfaces
 {
-	interface ILoadingAudioProgressChangeExecuter
+	public interface ILoadingAudioProgressChangeExecuter
 	{
-		public void Invoke(object sender, (long bitesRecived, long totaBitesToRecive) e);
+		public void ProgressHandler((long BytesReceived, long TotalBytesToReceive) data);
 	}
 }
