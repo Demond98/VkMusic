@@ -14,7 +14,7 @@ namespace VkMusic.Application.Interfaces
 		public AudioDTO NextAudio { get; }
 		public AudioDTO PreviousAudio { get; }
 		public Task Pause();
-		public Task Unpase();
+		public Task UnPause();
 		public Task PlayNext(Action<(long BytesReceived, long TotalBytesToReceive)> progress);
 		public Task PlayPrevious(Action<(long BytesReceived, long TotalBytesToReceive)> progress);
 	}

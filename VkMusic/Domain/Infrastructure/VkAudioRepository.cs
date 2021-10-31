@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using VkMusic.Domain.Core;
 using VkMusic.Domain.Interfaces;
@@ -16,10 +13,10 @@ namespace VkMusic.Infrastructure
 {
 	public sealed class VkAudioRepository : IAudioRepository
 	{
-		public static readonly string FilesDirectoryName = "audio";
+		public const string FilesDirectoryName = "audio";
 
-		private int _ownerId;
-		private string _token;
+		private readonly int _ownerId;
+		private readonly string _token;
 
 		public VkAudioRepository(int ownerId, string token)
 		{

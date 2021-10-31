@@ -1,13 +1,11 @@
 ﻿using System.Threading.Tasks;
-using VkMusic.Application.Interfaces;
 using VkMusic.Infrastructure;
-using VkMusic.User.Interfaces;
 using System.Reflection;
 using Ninject;
 
 namespace VkMusic
 {
-	public static partial class Program
+	public static class Program
 	{
 		private const string Config = "config.json";
 

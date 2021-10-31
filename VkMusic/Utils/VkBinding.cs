@@ -10,44 +10,36 @@ using VkMusic.Application.Infrastructure;
 
 namespace VkMusic
 {
-	public static partial class Program
+	public class VkBinding : NinjectModule
 	{
-		public class VkBinding : NinjectModule
+		private readonly Config _config;
+
+		public VkBinding(Config config)
 		{
-			private readonly Config config;
+			_config = config;
+		}
 
-			public VkBinding(Config config)
+		public override void Load()
+		{
+			Bind<IAudioRepository>().To<VkAudioRepository>()
+				.InSingletonScope()
+				.WithConstructorArgument(_config.OwnerId)
+				.WithConstructorArgument(_config.VkToken);
+
+			if (Environment.OSVersion.Platform == PlatformID.Win32NT)
 			{
-				this.config = config;
-			}
-
-			public override void Load()
-			{
-				Bind<IAudioRepository>().To<VkAudioRepository>()
-					.InSingletonScope()
-					.WithConstructorArgument(config.OwnerId)
-					.WithConstructorArgument(config.VkToken);
-
-				if (Environment.OSVersion.Platform == PlatformID.Unix)
-				{
-					//Bind<IAudioPlayer>().To<AudioPlayerNCA>()
-					//	.InSingletonScope();
-				}
-				else if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-				{
-					Bind<IAudioPlayer>().To<AudioPlayerNAudio>()
-						.InSingletonScope();
-				}
-				else
-					throw new PlatformNotSupportedException("Current OS not supported");
-
-				Bind<IAudioPlaylist>().To<AudioPlaylist>()
+				Bind<IAudioPlayer>().To<AudioPlayerNAudio>()
 					.InSingletonScope();
-
-				Bind<ILoadingAudioProgressChangeExecuter>().To<LoadingAudioProgressChangeWriteToConsole>();
-				Bind<IAudioChangeExecuter>().To<AudioChangeWriteToConsole>();
-				Bind<IUserInterface>().To<UserInterface>();
 			}
+			else
+				throw new PlatformNotSupportedException("Current OS not supported");
+
+			Bind<IAudioPlaylist>().To<AudioPlaylist>()
+				.InSingletonScope();
+
+			Bind<ILoadingAudioProgressChangeExecuter>().To<LoadingAudioProgressChangeWriteToConsole>();
+			Bind<IAudioChangeExecuter>().To<AudioChangeWriteToConsole>();
+			Bind<IUserInterface>().To<UserInterface>();
 		}
 	}
 }

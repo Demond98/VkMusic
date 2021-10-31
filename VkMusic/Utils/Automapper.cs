@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using VkMusic.Domain.Core;
 using VkNet.Model.Attachments;
 

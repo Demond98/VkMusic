@@ -9,8 +9,8 @@ namespace VkMusic.Application.Infrastructure
 {
 	public class AudioPlaylist : IAudioPlaylist
 	{
-		private IAudioPlayer _audioPlayer;
-		private IAudioRepository _audioRepository;
+		private readonly IAudioPlayer _audioPlayer;
+		private readonly IAudioRepository _audioRepository;
 		private readonly LinkedList<AudioDTO> _audios;
 		private LinkedListNode<AudioDTO> _currentAudioNode;
 
@@ -35,7 +35,7 @@ namespace VkMusic.Application.Infrastructure
 		public Task Pause()
 			=> _audioPlayer.Pause();
 
-		public Task Unpase()
+		public Task UnPause()
 			=> _audioPlayer.Unpause();
 
 		public Task PlayNext(Action<(long, long )> progress)
@@ -48,7 +48,7 @@ namespace VkMusic.Application.Infrastructure
 		{
 			_currentAudioNode = audioNode;
 			var progress = new Progress<(long, long)>(onProgress);
-			var stream = await _audioRepository.GetAudioStream(_currentAudioNode.Value, progress);
+			using var stream = await _audioRepository.GetAudioStream(_currentAudioNode.Value, progress);
 			await _audioPlayer.PlayAudio(stream);
 		}
 	}

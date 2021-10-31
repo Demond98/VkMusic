@@ -49,31 +49,31 @@ namespace VkMusic.User.Infrastructure
 
 		private Task HandlePause()
 		{
-			if (_audioPlaylist.CurrentState == PlayerState.Paused)
-				return _audioPlaylist.Unpase();
-
-			if (_audioPlaylist.CurrentState == PlayerState.Playing)
-				return _audioPlaylist.Pause();
-
-			return Task.CompletedTask;
+			return _audioPlaylist.CurrentState switch
+			{
+				PlayerState.Paused => _audioPlaylist.UnPause(),
+				PlayerState.Playing => _audioPlaylist.Pause(),
+				_ => Task.CompletedTask,
+			};
 		}
 
 		private Task PlayNext()
 		{
 			return PlayAudio(_audioPlaylist.PlayNext, _audioPlaylist.NextAudio)
-				.ContinueWith(async _ => await PlayNext());
+				.ContinueWith(async _ => await PlayNext(), TaskContinuationOptions.DenyChildAttach);
 		}
 
 		private Task PlayPrevious()
 		{
 			return PlayAudio(_audioPlaylist.PlayPrevious, _audioPlaylist.PreviousAudio)
-				.ContinueWith(async _ => await PlayNext());
+				.ContinueWith(async _ => await PlayNext(), TaskContinuationOptions.DenyChildAttach);
 		}
 
 		private static Task PlayAudio(Func<Action<(long, long)>, Task> playAudioFunc, AudioDTO currentAudio)
 		{
 			var task = playAudioFunc(ProgressHandler);
 			DrawAudioInfo(currentAudio);
+
 			return task;
 		}
 
@@ -86,10 +86,13 @@ namespace VkMusic.User.Infrastructure
 			var artist = currentAudio.Artist.Replace('\n', ' ');
 			var duration = currentAudio.DurationInSeconds;
 
+			var info = $"{title} - {artist} - {duration}sec";
+			var infoToShow = info.Truncate(Console.WindowWidth - 1);
+
 			Console.SetCursorPosition(0, 6);
 			Console.Write(new string(' ', Console.WindowWidth));
 			Console.SetCursorPosition(0, 6);
-			Console.WriteLine($"{title} - {artist} - {duration}sec".Truncate(Console.WindowWidth - 1));
+			Console.WriteLine(infoToShow);
 		}
 
 		private static readonly object _syncObject = new();
