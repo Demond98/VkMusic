@@ -1,15 +1,6 @@
-﻿using AutoMapper;
-using NAudio.Wave;
-using System;
-using System.Collections.Generic;
-using System.Media;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
-using VkMusic.Domain.Core;
 using VkMusic.Infrastructure;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using VkMusic.User.Interfaces;
 using System.Reflection;
 using Ninject;
@@ -18,6 +9,8 @@ namespace VkMusic
 {
 	public static partial class Program
 	{
+		private const string Config = "config.json";
+
 		static void Main(string[] args)
 		{
 			var container = InitilizeApplication();
@@ -28,18 +21,17 @@ namespace VkMusic
 		{
 			Automapper.Initilize();
 
-			var config = ConfigReader<Config>.ReadJsonFromFile("config.json");
-			var container = new StandardKernel(new VkBinding(config));
-			container.Load(Assembly.GetExecutingAssembly());
+			var config = ConfigReader<Config>.ReadJsonFromFile(Config);
+			var vkBinding = new VkBinding(config);
+			var container = new StandardKernel(vkBinding);
+			var currentAssembly = Assembly.GetExecutingAssembly();
+			container.Load(currentAssembly);
 
 			return container;
 		}
 
 		private static async Task StartupApplication(StandardKernel container)
 		{
-			var audioPlaylist = container.Get<IAudioPlaylist>();
-			var audioProgressChangeExecuter = container.Get<ILoadingAudioProgressChangeExecuter>();
-			var audioChangeExecuter = container.Get<IAudioChangeExecuter>();
 			var userInterface = container.Get<IUserInterface>();
 			
 			await userInterface.Invoke();

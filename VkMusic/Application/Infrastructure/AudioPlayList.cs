@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
 using VkMusic.Domain.Core;
@@ -15,8 +14,6 @@ namespace VkMusic.Application.Infrastructure
 		private readonly LinkedList<AudioDTO> _audios;
 		private LinkedListNode<AudioDTO> _currentAudioNode;
 
-		public AudioDTO CurrentAudio => _currentAudioNode?.Value;
-
 		public AudioPlaylist(IAudioPlayer audioPlayer, IAudioRepository audioRepository)
 		{
 			_audioPlayer = audioPlayer;
@@ -24,6 +21,13 @@ namespace VkMusic.Application.Infrastructure
 			_audios = _audioRepository.GetAllAudios().Result;
 			_currentAudioNode = null;
 		}
+
+		private LinkedListNode<AudioDTO> NextAudioNode => _currentAudioNode?.Next ?? _audios.First;
+		private LinkedListNode<AudioDTO> PreviousAudioNode => _currentAudioNode?.Previous ?? _audios.Last;
+
+		public AudioDTO CurrentAudio => _currentAudioNode?.Value;
+		public AudioDTO NextAudio => NextAudioNode.Value;
+		public AudioDTO PreviousAudio => PreviousAudioNode.Value;
 
 		public PlayerState CurrentState
 			=> _audioPlayer.CurrentState;
@@ -35,10 +39,10 @@ namespace VkMusic.Application.Infrastructure
 			=> _audioPlayer.Unpause();
 
 		public Task PlayNext(Action<(long, long )> progress)
-			=> PlayAudio(_currentAudioNode?.Next ?? _audios.First, progress);
+			=> PlayAudio(NextAudioNode, progress);
 
 		public Task PlayPrevious(Action<(long, long)> progress)
-			=> PlayAudio(_currentAudioNode?.Previous ?? _audios.Last, progress);
+			=> PlayAudio(PreviousAudioNode, progress);
 
 		private async Task PlayAudio(LinkedListNode<AudioDTO> audioNode, Action<(long, long)> onProgress)
 		{

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
@@ -65,10 +62,14 @@ namespace VkMusic.User.Infrastructure
 		}
 
 		private Task PlayNext()
-			=> PlayAudio(_audioPlaylist.PlayNext, _audioPlaylist.CurrentAudio);
+		{
+			return PlayAudio(_audioPlaylist.PlayNext, _audioPlaylist.NextAudio);
+		}
 
 		private Task PlayPrevious()
-			=> PlayAudio(_audioPlaylist.PlayPrevious, _audioPlaylist.CurrentAudio);
+		{
+			return PlayAudio(_audioPlaylist.PlayPrevious, _audioPlaylist.PreviousAudio);
+		}
 
 		private static Task PlayAudio(Func<Action<(long, long)>, Task> playAudioFunc, AudioDTO currentAudio)
 		{
@@ -91,7 +92,7 @@ namespace VkMusic.User.Infrastructure
 			Console.WriteLine($"{title} - {artist}".Truncate(Console.WindowWidth - 1));
 		}
 
-		private static object _syncObject = new();
+		private static readonly object _syncObject = new();
 		private static void ProgressHandler((long BytesReceived, long TotalBytesToReceive) e)
 		{
 			lock (_syncObject)
