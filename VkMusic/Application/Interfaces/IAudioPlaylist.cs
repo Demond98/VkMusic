@@ -12,7 +12,7 @@ namespace VkMusic.Application.Interfaces
 		public PlayerState CurrentState { get; }
 		public AudioDTO CurrentAudio { get; }
 		public Task Pause();
-		public Task Unpase();
+		public Task UnPause();
 		public Task PlayNext(Action<(long BytesReceived, long TotalBytesToReceive)> progress);
 		public Task PlayPrevious(Action<(long BytesReceived, long TotalBytesToReceive)> progress);
 	}

@@ -10,7 +10,7 @@ namespace VkMusic
 				return null;
 
 			return value.Length > maxLength
-				? value.Substring(0, maxLength)
+				? value[..maxLength]
 				: value;
 		}
 	}
