@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using VkMusic.Domain.Core;
+using VkMusic.Mapping;
 using VkNet.Model.Attachments;
 
 namespace VkMusic.Infrastructure
@@ -19,11 +20,8 @@ namespace VkMusic.Infrastructure
 
 		public static void Initilize()
 		{
-			_config = new MapperConfiguration(a =>
-				a.CreateMap<Audio, AudioDTO>()
-				.ForMember(a => a.Id, a => a.MapFrom(m => $"{m.OwnerId}_{m.Id}"))
-				.ForMember(a => a.DurationInSeconds, a => a.MapFrom(m => m.Duration))
-			);
+			var profile = new AudioProfile();
+			_config = new MapperConfiguration(e => e.AddProfile(profile));
 		}
 	}
 }
