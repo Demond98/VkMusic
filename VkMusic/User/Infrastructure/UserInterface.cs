@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
 using VkMusic.Domain.Core;
@@ -17,14 +16,12 @@ namespace VkMusic.User.Infrastructure
 			_audioPlaylist = audioPlaylist;
 		}
 
-		public async Task Invoke()
+		public void Invoke()
 		{
 			Console.CursorVisible = false;
 			DrawInterface();
 
-			var canselTokenSource = new CancellationTokenSource();
-			
-			var task = PlayNext().ContinueWith(async a => { while (true) await PlayNext(); });
+			Task.Run(PlayNext);
 			
 			while (true)
 			{
@@ -32,16 +29,16 @@ namespace VkMusic.User.Infrastructure
 				{
 					case ConsoleKey.LeftArrow:
 					case ConsoleKey.A:
-						task = PlayPrevious().ContinueWith(async a => { while (true) await PlayNext(); });
+						Task.Run(PlayNext);
 						break;
 
 					case ConsoleKey.RightArrow:
 					case ConsoleKey.D:
-						task = PlayNext().ContinueWith(async a => { while (true) await PlayNext(); });
+						Task.Run(PlayPrevious);
 						break;
 
 					case ConsoleKey.Spacebar:
-						await HandlePause();
+						Task.Run(HandlePause);
 						break;
 
 					case ConsoleKey.Escape:
@@ -63,12 +60,14 @@ namespace VkMusic.User.Infrastructure
 
 		private Task PlayNext()
 		{
-			return PlayAudio(_audioPlaylist.PlayNext, _audioPlaylist.NextAudio);
+			return PlayAudio(_audioPlaylist.PlayNext, _audioPlaylist.NextAudio)
+				.ContinueWith(async _ => await PlayNext());
 		}
 
 		private Task PlayPrevious()
 		{
-			return PlayAudio(_audioPlaylist.PlayPrevious, _audioPlaylist.PreviousAudio);
+			return PlayAudio(_audioPlaylist.PlayPrevious, _audioPlaylist.PreviousAudio)
+				.ContinueWith(async _ => await PlayNext());
 		}
 
 		private static Task PlayAudio(Func<Action<(long, long)>, Task> playAudioFunc, AudioDTO currentAudio)
@@ -85,11 +84,12 @@ namespace VkMusic.User.Infrastructure
 
 			var title = currentAudio.Title.Replace('\n', ' ');
 			var artist = currentAudio.Artist.Replace('\n', ' ');
+			var duration = currentAudio.DurationInSeconds;
 
 			Console.SetCursorPosition(0, 6);
 			Console.Write(new string(' ', Console.WindowWidth));
 			Console.SetCursorPosition(0, 6);
-			Console.WriteLine($"{title} - {artist}".Truncate(Console.WindowWidth - 1));
+			Console.WriteLine($"{title} - {artist} - {duration}sec".Truncate(Console.WindowWidth - 1));
 		}
 
 		private static readonly object _syncObject = new();

@@ -4,6 +4,6 @@ namespace VkMusic
 {
 	public interface IUserInterface
 	{
-		public Task Invoke();
+		public void Invoke();
 	}
 }

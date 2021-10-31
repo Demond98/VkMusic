@@ -34,7 +34,7 @@ namespace VkMusic
 		{
 			var userInterface = container.Get<IUserInterface>();
 			
-			await userInterface.Invoke();
+			userInterface.Invoke();
 		}
 	}
 }
