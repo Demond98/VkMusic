@@ -4,36 +4,35 @@ using System.Text;
 using VkMusic.Application.Interfaces;
 using VkMusic.Domain.Core;
 using VkMusic.User.Interfaces;
+using VkMusic.Utils;
 
 namespace VkMusic.User.Infrastructure
 {
 	public class AudioChangeWriteToConsole : IAudioChangeExecuter
 	{
-		private readonly IAudioPlaylist _audioPlayList;
+		private const int ConsoleLineIndex = 6;
 
-		public AudioChangeWriteToConsole(IAudioPlaylist audioPlaylist)
+		public AudioChangeWriteToConsole()
 		{
-			_audioPlayList = audioPlaylist;
+
 		}
 
-		public void Invoke()
+		public void Invoke(AudioDTO audioInfo)
 		{
-			var audio = _audioPlayList.CurrentAudio;
-			if (audio == null)
+			if (audioInfo == null)
 				return;
 
-			var title = audio.Title.Replace('\n', ' ');
-			var artist = audio.Artist.Replace('\n', ' ');
-			var duration = audio.DurationInSeconds;
+			var title = audioInfo.Title.Replace('\n', ' ');
+			var artist = audioInfo.Artist.Replace('\n', ' ');
+			var duration = audioInfo.DurationInSeconds;
 
 			var info = $"{title} - {artist} - {duration}sec";
 			var infoToShow = info.Truncate(Console.WindowWidth - 1);
 
-			Console.SetCursorPosition(0, 6);
+			Console.SetCursorPosition(0, ConsoleLineIndex);
 			Console.Write(new string(' ', Console.WindowWidth));
-			Console.SetCursorPosition(0, 6);
+			Console.SetCursorPosition(0, ConsoleLineIndex);
 			Console.WriteLine(infoToShow);
 		}
 	}
 }
-

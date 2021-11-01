@@ -1,4 +1,6 @@
-﻿namespace VkMusic.User.Interfaces
+﻿using System;
+
+namespace VkMusic.User.Interfaces
 {
 	public interface ILoadingAudioProgressChangeExecuter
 	{

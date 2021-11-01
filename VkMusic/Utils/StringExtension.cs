@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VkMusic
+namespace VkMusic.Utils
 {
 	public static class StringExtension
 	{

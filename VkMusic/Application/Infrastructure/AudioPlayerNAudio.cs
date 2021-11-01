@@ -6,18 +6,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VkMusic.Application.Interfaces;
+using VkMusic.Domain.Core;
+using VkMusic.Domain.Interfaces;
 
 namespace VkMusic.Application.Infrastructure
 {
 	public sealed class AudioPlayerNAudio : IAudioPlayer
 	{
-		private readonly WaveOutEvent _waveOutEvent;
+		private readonly IAudioRepository _audioRepository;
 		private readonly AutoResetEvent _autoResetEvent;
+		private readonly WaveOutEvent _waveOutEvent;
 
-		public AudioPlayerNAudio()
+		public AudioPlayerNAudio(IAudioRepository audioRepository)
 		{
-			_waveOutEvent = new WaveOutEvent();
+			_audioRepository = audioRepository;
 			_autoResetEvent = new AutoResetEvent(false);
+			_waveOutEvent = new WaveOutEvent();
 			_waveOutEvent.PlaybackStopped += PlaybackHandler;
 		}
 
@@ -66,6 +70,15 @@ namespace VkMusic.Application.Infrastructure
 			{
 				if (_waveOutEvent.PlaybackState == PlaybackState.Paused)
 					_waveOutEvent.Play();
+			}
+
+			return Task.CompletedTask;
+		}
+		public Task Stop()
+		{
+			lock (_waveOutEvent)
+			{
+				_waveOutEvent.Stop();
 			}
 
 			return Task.CompletedTask;

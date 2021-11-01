@@ -8,6 +8,6 @@ namespace VkMusic.User.Interfaces
 {
 	public interface IAudioChangeExecuter
 	{
-		public void Invoke();
+		public void Invoke(AudioDTO audioInfo);
 	}
 }

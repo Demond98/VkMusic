@@ -4,7 +4,7 @@ using VkMusic.Domain.Core;
 using VkMusic.Mapping;
 using VkNet.Model.Attachments;
 
-namespace VkMusic.Infrastructure
+namespace VkMusic.Mapping
 {
 	public static class Automapper
 	{

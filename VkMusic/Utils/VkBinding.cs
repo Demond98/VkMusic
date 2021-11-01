@@ -8,7 +8,7 @@ using VkMusic.User.Infrastructure;
 using Ninject.Modules;
 using VkMusic.Application.Infrastructure;
 
-namespace VkMusic
+namespace VkMusic.Utils
 {
 	public class VkBinding : NinjectModule
 	{

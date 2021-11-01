@@ -1,4 +1,5 @@
 using VkMusic.Infrastructure;
+using VkMusic.Mapping;
 using Xunit;
 
 namespace VkMusicTests

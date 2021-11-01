@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace VkMusic.Infrastructure
+namespace VkMusic.Utils
 {
 	public class Config
 	{

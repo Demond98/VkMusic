@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using VkMusic.Domain.Core;
 using VkMusic.Domain.Interfaces;
+using VkMusic.Mapping;
 using VkNet;
 using VkNet.Model.Attachments;
 
@@ -66,8 +67,6 @@ namespace VkMusic.Infrastructure
 			
 			using var webClient = new WebClient();
 			webClient.DownloadProgressChanged += (s, e) => progress.Report((e.BytesReceived, e.TotalBytesToReceive));
-			//HACK:
-			webClient.DownloadDataCompleted += (s, e) => progress.Report((1, 1));
 
 			var data = await webClient.DownloadDataTaskAsync(audioInfo.Url);
 

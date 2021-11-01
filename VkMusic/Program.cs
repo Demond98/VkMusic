@@ -1,6 +1,9 @@
 ﻿using VkMusic.Infrastructure;
 using System.Reflection;
 using Ninject;
+using VkMusic.Mapping;
+using VkMusic.Utils;
+using VkMusic.User.Interfaces;
 
 namespace VkMusic
 {
@@ -30,8 +33,8 @@ namespace VkMusic
 		private static void StartupApplication(StandardKernel container)
 		{
 			var userInterface = container.Get<IUserInterface>();
-			
-			userInterface.Invoke();
+
+			userInterface.Invoke().Wait();
 		}
 	}
 }
