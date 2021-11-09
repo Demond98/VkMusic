@@ -13,20 +13,12 @@ namespace VkMusic.Application.Infrastructure
 {
 	public sealed class AudioPlayerNAudio : IAudioPlayer
 	{
-		private readonly IAudioRepository _audioRepository;
-		private readonly AutoResetEvent _autoResetEvent;
 		private readonly WaveOutEvent _waveOutEvent;
 
-		public AudioPlayerNAudio(IAudioRepository audioRepository)
+		public AudioPlayerNAudio()
 		{
-			_audioRepository = audioRepository;
-			_autoResetEvent = new AutoResetEvent(false);
 			_waveOutEvent = new WaveOutEvent();
-			_waveOutEvent.PlaybackStopped += PlaybackHandler;
 		}
-
-		private void PlaybackHandler(object sender, StoppedEventArgs args)
-			=> _autoResetEvent.Set();
 
 		public PlayerState CurrentState => _waveOutEvent.PlaybackState switch
 		{
@@ -36,24 +28,31 @@ namespace VkMusic.Application.Infrastructure
 			_ => throw new NotImplementedException()
 		};
 
-		public Task PlayAudio(Stream audioStream)
+		public Task PlayAudioAsync(Stream audioStream)
 		{
+			var tsc = new TaskCompletionSource<StoppedEventArgs>();
+			void lambda(object s, StoppedEventArgs e)
+			{
+				_waveOutEvent.PlaybackStopped -= lambda;
+				if (e.Exception != null)
+					tsc.SetException(e.Exception);
+				
+				tsc.SetResult(e);
+			}
+
 			lock (_waveOutEvent)
 			{
-				_waveOutEvent.PlaybackStopped -= PlaybackHandler;
-
 				using var reader = new StreamMediaFoundationReader(audioStream);
 				_waveOutEvent.Stop();
 				_waveOutEvent.Init(reader);
 				_waveOutEvent.Play();
-
-				_waveOutEvent.PlaybackStopped += PlaybackHandler;
+				_waveOutEvent.PlaybackStopped += lambda;
 			}
 
-			return Task.Run(_autoResetEvent.WaitOne);
+			return tsc.Task;
 		}
 
-		public Task Pause()
+		public Task PauseAsync()
 		{
 			lock (_waveOutEvent)
 			{
@@ -64,7 +63,7 @@ namespace VkMusic.Application.Infrastructure
 			return Task.CompletedTask;
 		}
 
-		public Task Unpause()
+		public Task UnpauseAsync()
 		{
 			lock (_waveOutEvent)
 			{
@@ -74,7 +73,7 @@ namespace VkMusic.Application.Infrastructure
 
 			return Task.CompletedTask;
 		}
-		public Task Stop()
+		public Task StopAsync()
 		{
 			lock (_waveOutEvent)
 			{
@@ -87,7 +86,6 @@ namespace VkMusic.Application.Infrastructure
 		public void Dispose()
 		{
 			_waveOutEvent.Dispose();
-			_autoResetEvent.Dispose();
 		}
 	}
 }

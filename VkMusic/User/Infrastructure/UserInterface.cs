@@ -28,7 +28,7 @@ namespace VkMusic.User.Infrastructure
 			_loadingAudioProgressChangeExecuter = loadingAudioProgressChangeExecuter;
 		}
 
-		public async Task Invoke()
+		public async Task InvokeAsync()
 		{
 			Console.CursorVisible = false;
 			DrawInterface();
@@ -36,18 +36,18 @@ namespace VkMusic.User.Infrastructure
 			if (_audioPlaylist.CurrentAudio == null)
 				_audioPlaylist.Next();
 
-			var readKeyTask = Task.Run(ReadConsoleKeys);
+			var readKeyTask = Task.Run(ReadConsoleKeysAsync);
 
 			while (true)
 			{
 				var audioToPlay = _audioPlaylist.CurrentAudio;
 
 				var progress = new Progress<(long, long)>(_loadingAudioProgressChangeExecuter.ProgressHandler);
-				using var audioStream = await _audioRepository.GetAudioStream(audioToPlay, progress);
+				using var audioStream = await _audioRepository.GetAudioStreamAsync(audioToPlay, progress);
 				
 				_audioChangeExecuter.Invoke(audioToPlay);
 				
-				await _audioPlayer.PlayAudio(audioStream);
+				await _audioPlayer.PlayAudioAsync(audioStream);
 
 				if (audioToPlay == _audioPlaylist.CurrentAudio)
 					_audioPlaylist.Next();
@@ -56,7 +56,7 @@ namespace VkMusic.User.Infrastructure
 			await readKeyTask;
 		}
 
-		public async Task ReadConsoleKeys()
+		public async Task ReadConsoleKeysAsync()
 		{
 			while (true)
 			{
@@ -65,28 +65,28 @@ namespace VkMusic.User.Infrastructure
 					case ConsoleKey.LeftArrow:
 					case ConsoleKey.A:
 						_audioPlaylist.Previous();
-						await _audioPlayer.Stop();
+						await _audioPlayer.StopAsync();
 						break;
 
 					case ConsoleKey.RightArrow:
 					case ConsoleKey.D:
 						_audioPlaylist.Next();
-						await _audioPlayer.Stop();
+						await _audioPlayer.StopAsync();
 						break;
 
 					case ConsoleKey.Spacebar:
-						await HandlePause();
+						await HandlePauseAsync();
 						break;
 				}
 			}
 		}
 
-		private Task HandlePause()
+		private Task HandlePauseAsync()
 		{
 			return _audioPlayer.CurrentState switch
 			{
-				PlayerState.Paused => _audioPlayer.Unpause(),
-				PlayerState.Playing => _audioPlayer.Pause(),
+				PlayerState.Paused => _audioPlayer.UnpauseAsync(),
+				PlayerState.Playing => _audioPlayer.PauseAsync(),
 				_ => Task.CompletedTask,
 			};
 		}

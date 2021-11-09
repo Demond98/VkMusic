@@ -25,7 +25,7 @@ namespace VkMusic.Infrastructure
 			_token = token;
 		}
 
-		public async Task<LinkedList<AudioDTO>> GetAllAudios()
+		public async Task<LinkedList<AudioDTO>> GetAllAudiosAsync()
 		{
 			var vk = new VkApi();
 
@@ -56,7 +56,7 @@ namespace VkMusic.Infrastructure
 			return new LinkedList<AudioDTO>(audiosDTO);
 		}
 
-		public async Task<Stream> GetAudioStream(AudioDTO audioInfo, IProgress<(long BytesReceived, long TotalBytesToReceive)> progress)
+		public async Task<Stream> GetAudioStreamAsync(AudioDTO audioInfo, IProgress<(long BytesReceived, long TotalBytesToReceive)> progress)
 		{
 			Directory.CreateDirectory(FilesDirectoryName);
 

@@ -4,6 +4,6 @@ namespace VkMusic.User.Interfaces
 {
 	public interface IUserInterface
 	{
-		public Task Invoke();
+		public Task InvokeAsync();
 	}
 }

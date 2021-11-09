@@ -17,7 +17,7 @@ namespace VkMusic.Application.Infrastructure
 		public AudioPlaylist(IAudioRepository audioRepository)
 		{
 			_audioRepository = audioRepository;
-			_audios = _audioRepository.GetAllAudios().Result;
+			_audios = _audioRepository.GetAllAudiosAsync().Result;
 			_currentAudioNode = null;
 			_syncObject = new();
 		}
